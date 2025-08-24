@@ -17,7 +17,10 @@ func RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", base)
 
 	mediaRouter := router.PathPrefix("/media").Subrouter()
-	mediaRouter.HandleFunc("/", allMedia).Methods("GET")
+	mediaRouter.HandleFunc("", allMedia).Methods("GET")
+	mediaRouter.HandleFunc("", postMedia).Methods("POST")
 	mediaRouter.HandleFunc("/{id}", getMedia).Methods("GET")
+	mediaRouter.HandleFunc("/{id}", putMedia).Methods("PUT")
+	mediaRouter.HandleFunc("/{id}", deleteMedia).Methods("DELETE")
 
 }
