@@ -8,11 +8,18 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/Artificial-720/media-tracker/api"
+	"github.com/Artificial-720/media-tracker/db"
 	"github.com/Artificial-720/media-tracker/middleware"
 )
 
 func main() {
 	log.Println("Starting Server")
+
+	err := db.Open("./media.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	router := mux.NewRouter()
 
