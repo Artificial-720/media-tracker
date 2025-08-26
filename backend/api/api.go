@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
+	"github.com/Artificial-720/media-tracker/auth"
 	"github.com/gorilla/mux"
 )
 
@@ -36,6 +38,8 @@ func RegisterRoutes(router *mux.Router) {
 	mediaRouter.HandleFunc("/{id}", putMedia).Methods("PUT")
 	mediaRouter.HandleFunc("/{id}", deleteMedia).Methods("DELETE")
 
+	mediaRouter.Use(authMiddleware)
+
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	authRouter.HandleFunc("/login", postLogin).Methods("POST")
 	// authRouter.HandleFunc("/register", postRegister).Methods("POST")
@@ -46,4 +50,25 @@ func RegisterRoutes(router *mux.Router) {
 	// userMediaRouter.HandleFunc("/{id}", getUserMedia).Methods("GET")
 	// userMediaRouter.HandleFunc("/{id}", putUserMedia).Methods("PUT")
 	// userMediaRouter.HandleFunc("/{id}", deleteUserMedia).Methods("DELETE")
+}
+
+func authMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			writeError(w, http.StatusUnauthorized, "Authorization header is missing")
+			return
+		}
+		token := strings.Split(authHeader, "Bearer ")
+		if len(token) != 2 {
+			writeError(w, http.StatusUnauthorized, "malformed header")
+		} else {
+			tokenJWT := token[1]
+			if auth.VerifyJWT(tokenJWT) {
+				next.ServeHTTP(w, r)
+			} else {
+				writeError(w, http.StatusUnauthorized, "invalid token")
+			}
+		}
+	})
 }
