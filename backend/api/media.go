@@ -10,18 +10,6 @@ import (
 	"github.com/Artificial-720/media-tracker/db"
 )
 
-func writeResponse(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if data != nil {
-		json.NewEncoder(w).Encode(data)
-	}
-}
-
-func writeError(w http.ResponseWriter, status int, msg string) {
-	writeResponse(w, status, map[string]string{"error": msg})
-}
-
 func allMedia(w http.ResponseWriter, r *http.Request) {
 	items, err := db.GetAllMedia()
 	if err != nil {
