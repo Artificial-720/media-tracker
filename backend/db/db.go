@@ -10,7 +10,7 @@ import (
 var db *sql.DB
 
 type MediaItem struct {
-	ID int
+	ID int64
 	Title string
 	Type string
 	Source string
@@ -30,7 +30,7 @@ func Close() {
 }
 
 func InsertMedia(item MediaItem) (int64, error) {
-	result, err := db.Exec("INSERT INTO media_items (title, type) VALUES (?, ?)", item.Title, item.Type)
+	result, err := db.Exec("INSERT INTO media_items (title, type, source) VALUES (?, ?, ?)", item.Title, item.Type, item.Source)
 	if err != nil {
 		return 0, err
 	}
