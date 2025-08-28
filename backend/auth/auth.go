@@ -7,6 +7,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Auth struct {
+	Username string
+	Valid bool
+}
+
 var secret = []byte("this-is-my-key")
 
 func GenerateJWT(username string) (string, error) {
@@ -24,19 +29,22 @@ func GenerateJWT(username string) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyJWT(tokenString string) bool {
+func VerifyJWT(tokenString string) Auth {
+	var a Auth
+	a.Valid = false
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		return secret, nil
 	})
-	if err != nil {
-		return false
+	if err == nil && token.Valid {
+		sub, err := token.Claims.GetSubject()
+		if err == nil {
+			a.Username = sub
+			a.Valid = true
+		}
 	}
 
-	if !token.Valid {
-		return false
-	}
-
-	return true
+	return a
 }
 
 func HashPassword(password string) (string, error) {

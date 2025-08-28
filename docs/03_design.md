@@ -62,8 +62,8 @@ These endpoints manage the shared pool of media items that all users can referen
 
 These endpoints let a user track their relationship with a media item.
 
-`GET /user/media` - Retrieve a list of all media items.
-`GET /user/media/{id}` - Retrieve details of a specific media item.
-`POST /user/media` - Create a new media entry.
-`PUT /user/media/{id}` - Update a specific media item.
-`DELETE /user/media/{id}` - Delete a specific media item.
+`GET /user/media` - List all relationships for current user.
+`GET /user/media/{id}` - Retrieve details of a specific media relationship for current user.
+`POST /user/media` - Create a new relationship.
+`PUT /user/media/{id}` - Update a specific relationship.
+`DELETE /user/media/{id}` - Delete a specific relationship.

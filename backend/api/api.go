@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -31,6 +32,10 @@ func RegisterRoutes(router *mux.Router) {
 	log.Printf("Registering API routes...\n")
 	router.HandleFunc("/", base)
 
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/login", postLogin).Methods("POST")
+	// authRouter.HandleFunc("/register", postRegister).Methods("POST")
+
 	mediaRouter := router.PathPrefix("/media").Subrouter()
 	mediaRouter.HandleFunc("", allMedia).Methods("GET")
 	mediaRouter.HandleFunc("", postMedia).Methods("POST")
@@ -40,16 +45,14 @@ func RegisterRoutes(router *mux.Router) {
 
 	mediaRouter.Use(authMiddleware)
 
-	authRouter := router.PathPrefix("/auth").Subrouter()
-	authRouter.HandleFunc("/login", postLogin).Methods("POST")
-	// authRouter.HandleFunc("/register", postRegister).Methods("POST")
+	userMediaRouter := router.PathPrefix("/user/media").Subrouter()
+	userMediaRouter.HandleFunc("", allUserMedia).Methods("GET")
+	userMediaRouter.HandleFunc("", postUserMedia).Methods("POST")
+	userMediaRouter.HandleFunc("/{id}", getUserMedia).Methods("GET")
+	userMediaRouter.HandleFunc("/{id}", putUserMedia).Methods("PUT")
+	userMediaRouter.HandleFunc("/{id}", deleteUserMedia).Methods("DELETE")
 
-	// userMediaRouter := router.PathPrefix("/user/media").Subrouter()
-	// userMediaRouter.HandleFunc("", allUserMedia).Methods("GET")
-	// userMediaRouter.HandleFunc("", postUserMedia).Methods("POST")
-	// userMediaRouter.HandleFunc("/{id}", getUserMedia).Methods("GET")
-	// userMediaRouter.HandleFunc("/{id}", putUserMedia).Methods("PUT")
-	// userMediaRouter.HandleFunc("/{id}", deleteUserMedia).Methods("DELETE")
+	userMediaRouter.Use(authMiddleware)
 }
 
 func authMiddleware(next http.Handler) http.Handler {
@@ -64,8 +67,12 @@ func authMiddleware(next http.Handler) http.Handler {
 			writeError(w, http.StatusUnauthorized, "malformed header")
 		} else {
 			tokenJWT := token[1]
-			if auth.VerifyJWT(tokenJWT) {
-				next.ServeHTTP(w, r)
+			a := auth.VerifyJWT(tokenJWT)
+			if a.Valid {
+				ctx := context.WithValue(r.Context(), "auth", a)
+				// access context value in handlers with this:
+				// auth := r.Context().Value("auth").
+				next.ServeHTTP(w, r.WithContext(ctx))
 			} else {
 				writeError(w, http.StatusUnauthorized, "invalid token")
 			}
