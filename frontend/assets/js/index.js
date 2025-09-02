@@ -44,7 +44,7 @@ const loginTemplate = `
 
 
 
-async function submitForm(form) {
+async function submitLoginForm(form) {
   const formData = new FormData(form);
   console.log(formData);
   var object = {};
@@ -56,11 +56,21 @@ async function submitForm(form) {
       headers: { "Content-Type": "application/json" },
       body: json,
     });
-    console.log(await response.json());
+    const data = await response.json();
+    console.log(data);
+    if (response.ok) {
+      localStorage.setItem("token", data.token);
+      router("/");
+    } else {
+      // show error
+      console.log(data.error);
+    }
   } catch (e) {
     console.log(e);
   }
 }
+
+
 
 
 
@@ -86,7 +96,7 @@ function router(path) {
         loginForm.addEventListener("submit", (event) => {
           event.preventDefault();
           console.log("caught the form submit!");
-          submitForm(loginForm);
+          submitLoginForm(loginForm);
         });
       }
     }
@@ -94,11 +104,6 @@ function router(path) {
 }
 
 function initialize() {
-  // register routes in our router
-  // display the page depending on the router
-  
-  
-  // check if logged in
   if (localStorage.getItem('token')) {
     router('/');
   } else {
