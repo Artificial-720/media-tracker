@@ -22,12 +22,15 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := db.GetUserByUsername(creds.Username)
-	if err != nil  || !auth.CheckPasswordHash(user.PasswordHash, creds.Password){
-		writeError(w, http.StatusUnauthorized, "invalid username or password")
+	if err != nil || !auth.CheckPasswordHash(user.PasswordHash, creds.Password) {
+		if err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
+		} else {
+			writeError(w, http.StatusUnauthorized, "invalid username or password")
+		}
 		return
 	}
 
 	token, err := auth.GenerateJWT(user.Username)
 	writeResponse(w, http.StatusOK, map[string]string{"token": token})
 }
-

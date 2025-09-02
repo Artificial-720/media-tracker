@@ -55,6 +55,9 @@
     .btn-secondary { background-color: var(--secondary); }
     .btn-primary:hover, .btn-secondary:hover { opacity: 0.75;}
 
+
+    .login-title { display: block; }
+    .login-form { display: flex; flex-direction: column; gap: 10px; }
   </style>
 </head>
 
@@ -77,39 +80,12 @@
 
   </header>
 
-  <div class="container">
-    <button class="btn-primary">Books</button>
-    <button class="btn-primary">Movies</button>
-    <button class="btn-primary">TV Shows</button>
-    <button class="btn-primary">Games</button>
-  </div>
-
-  <main>
-    <div class="cards">
-
-      <div class="card">
-        <div class="card__img_container">
-          <img src="https://www.dummyimage.com/400x600/000/fff" alt="" class="card__img">
-        </div>
-        <a href="#followed" class="card__link"></a>
-        <p class="card__txt">Test Card 1</p>
-      </div>
-
-      <div class="card">
-        <div class="card__img_container">
-          <img src="https://www.dummyimage.com/400x600/000/fff" alt="" class="card__img">
-        </div>
-        <a href="#followed" class="card__link"></a>
-        <p class="card__txt">Test Card 2</p>
-      </div>
-
-    </div>
-
-  </main>
-
+  <main id="app"></main>
 
   <footer class="footer">
     <p>Created by Artificial - 2025</p>
   </footer>
+
+   <script src="assets/js/index.js"></script> 
 </body>
 </html>
