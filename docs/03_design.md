@@ -1,5 +1,12 @@
 # Design
 
+## Revision History
+
+| Date       | Notes                                                |
+| ---------- | ---------------------------------------------------- |
+| Initial    | Initial design draft.                                |
+| 2025-09-02 | Updated Database schema to add image to media_items. |
+
 ## 1. Architecture
 
 The Media Tracker will be a web-based application with a client–server model.
@@ -29,6 +36,7 @@ The Media Tracker will be a web-based application with a client–server model.
 | type        | TEXT    | CHECK(type IN ('TV_SHOW','MOVIE','BOOK','GAME')) |
 | source      | TEXT    | CHECK(source IN ('USER_ADDED','EXTERNAL'))       |
 | external_id | INTEGER | NULLABLE                                         |
+| image_url   | TEXT    | NULLABLE                                         |
 The reason for the source column is to make future proof by allowing ability for external sources.
 
 ### user_media

@@ -103,9 +103,31 @@ function router(path) {
   });
 }
 
-function initialize() {
+async function populateTable() {
+  try {
+    const response = await fetch("/api/user/media", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+    if (response.ok) {
+    } else {
+      // show error
+      console.log(data.error);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function initialize() {
   if (localStorage.getItem('token')) {
     router('/');
+    populateTable();
   } else {
     router('/login');
   }

@@ -10,6 +10,14 @@ type UserMedia struct {
 	Note string `json:"note"`
 }
 
+type UserMediaDetail struct {
+	ID int64 `json:"id"`
+	UserID int64 `json:"user_id"`
+	Status string `json:"status"`
+	Note string `json:"note"`
+	Media MediaItem `json:"media"`
+}
+
 func InsertUserMedia(item UserMedia) (int64, error) {
 	result, err := db.Exec("INSERT INTO user_media (user_id, media_id, status, note) VALUES (?, ?, ?, ?)", item.UserID, item.MediaID, item.Status, item.Note)
 	if err != nil {
@@ -34,18 +42,24 @@ func GetUserMedia(id int64) (*UserMedia, error) {
 	return &item, nil
 }
 
-func GetAllUserMedia(userID int64) ([]UserMedia, error) {
-	rows, err := db.Query("SELECT id, user_id, media_id, status, note FROM user_media WHERE user_id=?", userID)
+func GetAllUserMedia(userID int64) ([]UserMediaDetail, error) {
+	rows, err := db.Query(
+		`SELECT
+			um.id AS id, um.user_id, um.status, um.note,
+			m.id AS media_id, m.title, m.type, m.image_url
+		FROM user_media um
+		JOIN media_items m ON um.media_id = m.id
+		WHERE user_id=?`, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var items []UserMedia
+	var items []UserMediaDetail
 
 	for rows.Next() {
-		var item UserMedia
-		err := rows.Scan(&item.ID, &item.UserID, &item.MediaID, &item.Status, &item.Note)
+		var item UserMediaDetail
+		err := rows.Scan(&item.ID, &item.UserID, &item.Status, &item.Note, &item.Media.ID, &item.Media.Title, &item.Media.Type, &item.Media.ImageURL)
 		if err != nil {
 			return items, err
 		}

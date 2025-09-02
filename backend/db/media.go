@@ -8,6 +8,7 @@ type MediaItem struct {
 	Type string `json:"type"`
 	Source string `json:"source"`
 	ExternalId int `json:"external_id"`
+	ImageURL string `json:"image_url"`
 }
 
 func InsertMedia(item MediaItem) (int64, error) {
