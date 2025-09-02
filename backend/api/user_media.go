@@ -35,7 +35,7 @@ func getUserMedia(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item, err := db.GetUserMedia(id)
+	item, err := db.GetUserMediaDetail(id)
 	if err != nil {
 		writeError(w, http.StatusNotFound, err.Error())
 		return

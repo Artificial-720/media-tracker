@@ -42,6 +42,23 @@ func GetUserMedia(id int64) (*UserMedia, error) {
 	return &item, nil
 }
 
+func GetUserMediaDetail(id int64) (*UserMediaDetail, error) {
+	var item UserMediaDetail
+
+	rows := db.QueryRow(
+		`SELECT
+			um.id AS id, um.user_id, um.status, um.note,
+			m.id AS media_id, m.title, m.type, m.image_url
+		FROM user_media um
+		JOIN media_items m ON um.media_id = m.id
+		WHERE um.id=?`, id)
+	err := rows.Scan(&item.ID, &item.UserID, &item.Status, &item.Note, &item.Media.ID, &item.Media.Title, &item.Media.Type, &item.Media.ImageURL)
+	if err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
 func GetAllUserMedia(userID int64) ([]UserMediaDetail, error) {
 	rows, err := db.Query(
 		`SELECT
@@ -78,11 +95,11 @@ func UpdateUserMedia(id int64, item UserMedia) (*UserMedia, error) {
 		return nil, err
 	}
 
-	updatedItem, err := GetUserMedia(id)
+	updatedMedia, err := GetUserMedia(id)
 	if err != nil {
 		return nil, err
 	}
-	return updatedItem, nil
+	return updatedMedia, nil
 }
 
 func DeleteUserMedia(id int64) error {
