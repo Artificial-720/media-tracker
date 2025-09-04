@@ -8,24 +8,7 @@ const rootTemplate = `
       <button class="btn-primary">Games</button>
     </div>
 
-    <div class="cards">
-
-      <div class="card">
-        <div class="card__img_container">
-          <img src="https://www.dummyimage.com/400x600/000/fff" alt="" class="card__img">
-        </div>
-        <a href="#followed" class="card__link"></a>
-        <p class="card__txt">Test Card 1</p>
-      </div>
-
-      <div class="card">
-        <div class="card__img_container">
-          <img src="https://www.dummyimage.com/400x600/000/fff" alt="" class="card__img">
-        </div>
-        <a href="#followed" class="card__link"></a>
-        <p class="card__txt">Test Card 2</p>
-      </div>
-
+    <div class="cards" id="cards">
     </div>
 `;
 const loginTemplate = `
@@ -103,7 +86,19 @@ function router(path) {
   });
 }
 
+async function appendCard(item, index) {
+  const cards = document.getElementById("cards");
+  let card = '<div class="card"><div class="card__img_container">';
+  card += '<img src="'+item.media.image_url+'" alt="" class="card__img">';
+  card += '</div>';
+  card += '<a href="#followed" class="card__link"></a>';
+  card += '<p class="card__txt">'+ item.media.title +'</p>';
+  card += '</div>';
+  cards.innerHTML += card;
+}
+
 async function populateTable() {
+  console.log("populate");
   try {
     const response = await fetch("/api/user/media", {
       method: "GET",
@@ -115,6 +110,7 @@ async function populateTable() {
     const data = await response.json();
     console.log(data);
     if (response.ok) {
+      data.forEach(appendCard);
     } else {
       // show error
       console.log(data.error);
