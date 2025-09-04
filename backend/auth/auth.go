@@ -12,7 +12,11 @@ type Auth struct {
 	Valid bool
 }
 
-var secret = []byte("this-is-my-key")
+var secret []byte
+
+func InitAuth(secretKey string) {
+	secret = []byte(secretKey)
+}
 
 func GenerateJWT(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
